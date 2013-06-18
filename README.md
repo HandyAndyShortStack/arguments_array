@@ -89,4 +89,4 @@ I am happy with this.  One way to create a new array is by just calling ``Array`
 
 ## Conclusions
 
-I have no idea why I did this, but now I know a bit more about prototypal inheritance than I did before.  ``arguments`` really should inherit from `Array.prototype``.
+I have no idea why I did this, but now I know a bit more about prototypal inheritance than I did before.  ``arguments`` really should inherit from ``Array.prototype``.
