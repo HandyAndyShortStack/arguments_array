@@ -32,7 +32,7 @@ Okay, good.
 
 ## First Attempt
 
-I'm too ashamed to show this here.  Suffice it to say that it used Object.create in the worst way imaginable.
+I'm too ashamed to show this here.  Suffice it to say that it used ``Object.create`` in the worst way imaginable.
 
 ## Second Attempt
 
