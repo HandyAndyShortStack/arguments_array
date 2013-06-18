@@ -22,7 +22,7 @@ TypeError: Object #<Object> has no method 'join'
 
 ``arguments`` looks like a javascript "array" in that it is an object with numbered indecies and it has a ``length`` property, but that is where the similarity ends.  There doesn't seem to be a good reason for ``arguments`` not being a proper array.  I am going to assume that this is just javascript being broken and not a design feature.  So rather than rewrite my beautiful ``joinArguments`` function, I have resolved to find a concise way of making ``Array.prototype`` methods available to the ``arguments`` object.
 
-I have to check one thing first: is arguments writable?
+I have to check one thing first: is ``arguments`` writable?
 ```javascript
 (function() { return Object.getOwnPropertyDescriptor(arguments, '0').writable; })('value');
 // => true
