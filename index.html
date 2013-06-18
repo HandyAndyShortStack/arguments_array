@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+    <title>Arguments array by HandyAndyShortStack</title>
+  </head>
+
+  <body>
+
+    <header>
+      <div class="container">
+        <h1>Arguments array</h1>
+        <h2>Finding a way to easily make arguments inherit from Array.prototype</h2>
+
+        <section id="downloads">
+          <a href="https://github.com/HandyAndyShortStack/arguments_array/zipball/master" class="btn">Download as .zip</a>
+          <a href="https://github.com/HandyAndyShortStack/arguments_array/tarball/master" class="btn">Download as .tar.gz</a>
+          <a href="https://github.com/HandyAndyShortStack/arguments_array" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="main_content">
+        <h1>
+<a name="arguments_array" class="anchor" href="#arguments_array"><span class="octicon octicon-link"></span></a>arguments_array</h1>
+
+<p>(javascript)
+My quest to make <code>arguments</code> inherit from <code>Array.prototype</code>.</p>
+
+<h2>
+<a name="why" class="anchor" href="#why"><span class="octicon octicon-link"></span></a>Why</h2>
+
+<p>In some of my coursework for Code Fellows, I was asked to write a javascript function that would concatenate two strings passed as arguments, separating them with a space.  Simple, right?</p>
+
+<div class="highlight"><pre><span class="p">(</span><span class="kd">function</span> <span class="nx">joinArguments</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s1">' '</span><span class="p">);</span>
+<span class="p">})(</span><span class="s1">'foo'</span><span class="p">,</span> <span class="s1">'bar'</span><span class="p">);</span>
+</pre></div>
+
+<p>Nope!</p>
+
+<pre><code>TypeError: Object #&lt;Object&gt; has no method 'join'
+</code></pre>
+
+<p><code>arguments</code> looks like a javascript "array" in that it is an object with numbered indecies and it has a <code>length</code> property, but that is where the similarity ends.  There doesn't seem to be a good reason for <code>arguments</code> not being a proper array.  I am going to assume that this is just javascript being broken and not a design feature.  So rather than rewrite my beautiful <code>joinArguments</code> function, I have resolved to find a concise way of making <code>Array.prototype</code> methods available to the <code>arguments</code> object.</p>
+
+<p>I have to check one thing first: is <code>arguments</code> writable?</p>
+
+<div class="highlight"><pre><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">getOwnPropertyDescriptor</span><span class="p">(</span><span class="nx">arguments</span><span class="p">,</span> <span class="s1">'0'</span><span class="p">).</span><span class="nx">writable</span><span class="p">;</span> <span class="p">})(</span><span class="s1">'value'</span><span class="p">);</span>
+<span class="c1">// =&gt; true</span>
+</pre></div>
+
+<p>Okay, good.</p>
+
+<h2>
+<a name="first-attempt" class="anchor" href="#first-attempt"><span class="octicon octicon-link"></span></a>First Attempt</h2>
+
+<p>I'm too ashamed to show this here.  Suffice it to say that it used <code>Object.create</code> in the worst way imaginable.</p>
+
+<h2>
+<a name="second-attempt" class="anchor" href="#second-attempt"><span class="octicon octicon-link"></span></a>Second Attempt</h2>
+
+<div class="highlight"><pre><span class="p">(</span><span class="kd">function</span> <span class="nx">joinArguments</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">_arguments</span> <span class="o">=</span> <span class="p">[];</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">_arguments</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">arguments</span><span class="p">[</span><span class="nx">i</span><span class="p">]);</span>
+  <span class="p">}</span>
+  <span class="nx">arguments</span> <span class="o">=</span> <span class="nx">_arguments</span><span class="p">;</span>
+  <span class="k">return</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s1">' '</span><span class="p">);</span>
+<span class="p">})(</span><span class="s1">'foo'</span><span class="p">,</span> <span class="s1">'bar'</span><span class="p">);</span>
+</pre></div>
+
+<p>I am just iterating over the arguments object and pushing its contents into a proper array.  This works, but there sure is a lot of typing involved.  I can't be bothered to type that out every time I want to use an array method on <code>arguments</code>.  I can do better.</p>
+
+<h3>
+<a name="refinement" class="anchor" href="#refinement"><span class="octicon octicon-link"></span></a>Refinement</h3>
+
+<div class="highlight"><pre><span class="p">(</span><span class="kd">function</span> <span class="nx">joinArguments</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">_arguments</span> <span class="o">=</span> <span class="p">[];</span>
+  <span class="k">for</span><span class="p">(</span><span class="nx">i</span> <span class="k">in</span> <span class="nx">arguments</span><span class="p">)</span> <span class="p">{</span> <span class="nx">_arguments</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">arguments</span><span class="p">[</span><span class="nx">i</span><span class="p">]);</span> <span class="p">}</span>
+  <span class="nx">arguments</span> <span class="o">=</span> <span class="nx">_arguments</span><span class="p">;</span>
+  <span class="k">return</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s1">' '</span><span class="p">);</span>
+<span class="p">})(</span><span class="s1">'foo'</span><span class="p">,</span> <span class="s1">'bar'</span><span class="p">);</span>
+</pre></div>
+
+<p>For in loops are not used much in javascript, but this seems like a safe place to do so.  a call to <code>arguments.hasOwnProperty</code> does not seem necessary, as <code>arguments.prototype === undefined // =&gt; true</code>.  This is still a lot to type though.</p>
+
+<h2>
+<a name="googling" class="anchor" href="#googling"><span class="octicon octicon-link"></span></a>Googling</h2>
+
+<p>Google led me to this page:
+<a href="http://stackoverflow.com/questions/960866/converting-the-arguments-object-to-an-array-in-javascript">http://stackoverflow.com/questions/960866/converting-the-arguments-object-to-an-array-in-javascript</a>, where <code>arguments = Array.prototype.slice.call(arguments, 0);</code> is suggested.  A one liner!  Here is my function using this suggestion:</p>
+
+<div class="highlight"><pre><span class="p">(</span><span class="kd">function</span> <span class="nx">joinArguments</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">arguments</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+  <span class="k">return</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s1">' '</span><span class="p">);</span>
+<span class="p">})(</span><span class="s1">'foo'</span><span class="p">,</span> <span class="s1">'bar'</span><span class="p">);</span>
+</pre></div>
+
+<p>This is far easier to type than my previous attempts.  It works by borrowing a method from <code>Array.prototype</code> that will return a new array.  <code>Array.prototype.slice</code> doesn't seem to care that <code>arguments</code> is not a descendant <code>Array.prototype</code>.  I think I can do better though.</p>
+
+<h2>
+<a name="final-attempt" class="anchor" href="#final-attempt"><span class="octicon octicon-link"></span></a>Final Attempt</h2>
+
+<div class="highlight"><pre><span class="p">(</span><span class="kd">function</span> <span class="nx">joinArguments</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">arguments</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
+  <span class="k">return</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s1">' '</span><span class="p">);</span>
+<span class="p">})(</span><span class="s1">'foo'</span><span class="p">,</span> <span class="s1">'bar'</span><span class="p">);</span>
+</pre></div>
+
+<p>I am happy with this.  One way to create a new array is by just calling <code>Array</code> with the contents of the array as arguments.  In order to reformulate this function call to accept an array-like object in place of an explicit list of arguments, I used <code>Function.prototype.apply</code> and passed <code>null</code> in as the <code>this</code> value.  </p>
+
+<h2>
+<a name="conclusions" class="anchor" href="#conclusions"><span class="octicon octicon-link"></span></a>Conclusions</h2>
+
+<p>I have no idea why I did this, but now I know a bit more about prototypal inheritance than I did before.  <code>arguments</code> really should inherit from <code>Array.prototype</code>.</p>
+      </section>
+    </div>
+
+    
+  </body>
+</html>
