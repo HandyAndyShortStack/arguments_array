@@ -93,4 +93,4 @@ I have no idea why I did this, but now I know a bit more about prototypal inheri
 
 ## Epilogue
 
-Since I first wrote this, I have found that ``Array``, when given one argument that is a number, will return an array with that number of ``undefined`` elements.  I still like my solution, but it would need to be expanded upon in situations where ``arguments`` could have one element that could possible be a number.
+Since I first wrote this, I have found that ``Array``, when given one argument that is a number, will return an array with that number of ``undefined`` elements.  I still like my solution, but it would need to be expanded upon in situations where ``arguments`` could have one element that could possibly be a number.
