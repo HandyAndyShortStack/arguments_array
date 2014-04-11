@@ -60,7 +60,7 @@ I am just iterating over the arguments object and pushing its contents into a pr
 })('foo', 'bar');
 ```
 
-For in loops are not used much in javascript, but this seems like a safe place to do so.  a call to ``arguments.hasOwnProperty`` does not seem necessary, as ``arguments.prototype === undefined // => true``.  This is still a lot to type though.
+For in loops are not used much in javascript, but this seems like a safe place to do so.  a call to ``arguments.hasOwnProperty`` does not seem necessary, as ``arguments.constructor.prototype`` is an empty object.  This is still a lot to type though.
 
 ## Googling
 
@@ -90,3 +90,7 @@ I am happy with this.  One way to create a new array is by just calling ``Array`
 ## Conclusions
 
 I have no idea why I did this, but now I know a bit more about prototypal inheritance than I did before.  ``arguments`` really should inherit from ``Array.prototype``.
+
+## Epilogue
+
+Since I first wrote this, I have found that ``Array``, when given one argument that is a number, will return an array with that number of ``undefined`` elements.  I still like my solution, but it would need to be expanded upon in situations where ``arguments`` could have one element that could possible be a number.
